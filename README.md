@@ -1,5 +1,31 @@
 # OMDB Movie Search Project
 
+## 🚀 Live Demo
+
+**[https://emrhnarsln.github.io/omdb-project/](https://emrhnarsln.github.io/omdb-project/)**
+
+---
+
+## 📋 Project Summary
+
+A fully responsive Single Page Application (SPA) built with vanilla HTML, CSS, and JavaScript that consumes the OMDB API.
+
+**Implemented Features:**
+- 🔍 Movie & series search with Enter key and button support
+- 🎬 Detail modal: Title, Year, Genre, Director, Poster, IMDb Rating, Plot
+- ⚠️ Error handling: not found, network error, invalid API key
+- 🔄 Multiple searches without page reload
+- 💾 Last search persistence via URL parameters & LocalStorage
+- 🎛️ Filters: Content type (Movie / Series / Episode) + Year
+- 🕐 Search history dropdown (max 5 items)
+- ❤️ Favorites panel (LocalStorage based)
+- 🔔 Toast notifications (success / error / info)
+- 📄 Smart pagination
+- ⚡ LocalStorage cache (5 min TTL, no duplicate requests)
+- 📱 Responsive design (mobile-first, BEM CSS)
+
+---
+
 ## How to Set Up Your Repository
 
 **WARNING**: This is a template project. Do not fork this repository.

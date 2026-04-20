@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="OMDB API ile film ve dizi arama uygulaması. Milyonlarca içerik arasında arayın."
+        />
+        <meta name="theme-color" content="#1a1a2e" />
+        <title>🎬 FilmAra — OMDB Film Arama</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@600;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <link rel="stylesheet" href="css/styles.css" />
+    </head>
+
+    <body>
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="container header__inner">
+                <div class="header__brand">
+                    <h1 class="header__logo">🎬 FilmAra</h1>
+                    <p class="header__subtitle">
+                        OMDB veritabanında milyonlarca film &amp; dizi
+                    </p>
+                </div>
+                <button
+                    id="favorites-btn"
+                    class="header__favorites-btn"
+                    aria-label="Favorilerimi aç"
+                    aria-expanded="false"
+                    aria-controls="favorites-panel"
+                >
+                    <span class="header__favorites-icon">❤️</span>
+                    <span class="header__favorites-label">Favorilerim</span>
+                    <span
+                        id="favorites-count"
+                        class="favorites-badge"
+                        aria-label="favori sayısı"
+                        hidden
+                        >0</span
+                    >
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== ANA İÇERİK ===== -->
+        <main class="main" id="main-content">
+            <div class="container">
+                <!-- ===== ARAMA BÖLÜMÜ ===== -->
+                <section class="search-section" aria-label="Film Arama">
+                    <!-- Arama Barı -->
+                    <div class="search-bar" role="search">
+                        <div class="search-bar__input-wrapper">
+                            <input
+                                type="search"
+                                id="search-input"
+                                class="search-bar__input"
+                                placeholder="Film veya dizi adı ara... (örn: Inception, Breaking Bad)"
+                                aria-label="Film adı girin"
+                                aria-autocomplete="list"
+                                aria-controls="search-history-dropdown"
+                                aria-expanded="false"
+                                autocomplete="off"
+                                spellcheck="false"
+                            />
+
+                            <!-- Arama Geçmişi Dropdown -->
+                            <div
+                                id="search-history-dropdown"
+                                class="search-history"
+                                role="listbox"
+                                aria-label="Son aramalar"
+                                hidden
+                            >
+                                <div class="search-history__header">
+                                    <span class="search-history__title"
+                                        >🕐 Son Aramalar</span
+                                    >
+                                    <button
+                                        id="clear-history-btn"
+                                        class="search-history__clear-btn"
+                                        aria-label="Arama geçmişini temizle"
+                                        type="button"
+                                    >
+                                        Temizle
+                                    </button>
+                                </div>
+                                <ul
+                                    id="search-history-list"
+                                    class="search-history__list"
+                                ></ul>
+                            </div>
+                        </div>
+
+                        <button
+                            id="search-btn"
+                            class="search-bar__btn"
+                            type="button"
+                            aria-label="Ara"
+                        >
+                            <span class="search-bar__btn-icon">🔍</span>
+                            <span class="search-bar__btn-label">Ara</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtreler -->
+                    <div
+                        class="filters"
+                        role="group"
+                        aria-label="Arama filtreleri"
+                    >
+                        <div class="filter-group">
+                            <label
+                                class="filter-group__label"
+                                for="filter-type"
+                            >
+                                İçerik Türü
+                            </label>
+                            <div class="filter-group__select-wrapper">
+                                <select
+                                    id="filter-type"
+                                    class="filter-group__select"
+                                    aria-label="İçerik türüne göre filtrele"
+                                >
+                                    <option value="all">Tümü</option>
+                                    <option value="movie">🎬 Film</option>
+                                    <option value="series">📺 Dizi</option>
+                                    <option value="episode">🎞️ Bölüm</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label
+                                class="filter-group__label"
+                                for="filter-year"
+                            >
+                                Yıl
+                            </label>
+                            <input
+                                type="number"
+                                id="filter-year"
+                                class="filter-group__input"
+                                placeholder="örn: 2024"
+                                min="1888"
+                                max="2030"
+                                aria-label="Yıla göre filtrele"
+                            />
+                        </div>
+
+                        <button
+                            id="clear-filters-btn"
+                            class="filter-clear-btn"
+                            type="button"
+                            aria-label="Tüm filtreleri temizle"
+                            hidden
+                        >
+                            ✕ Filtreleri Temizle
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ===== SONUÇ BİLGİSİ ===== -->
+                <p
+                    id="results-info"
+                    class="results-info"
+                    aria-live="polite"
+                    aria-atomic="true"
+                ></p>
+
+                <!-- ===== FİLM KARTLARI GRİD ===== -->
+                <section
+                    id="results-grid"
+                    class="results-grid"
+                    aria-label="Arama sonuçları"
+                    aria-live="polite"
+                ></section>
+
+                <!-- ===== SAYFALAMA ===== -->
+                <nav
+                    id="pagination"
+                    class="pagination"
+                    aria-label="Sayfa navigasyonu"
+                ></nav>
+            </div>
+        </main>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <div class="container footer__inner">
+                <p class="footer__text">
+                    Film verileri
+                    <a
+                        href="https://www.omdbapi.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >OMDB API</a
+                    >
+                    tarafından sağlanmaktadır.
+                </p>
+                <p class="footer__credit">Made with ❤️ for i2i Systems</p>
+            </div>
+        </footer>
+
+        <!-- ===== MODAL — Film Detayı ===== -->
+        <div
+            id="modal-overlay"
+            class="modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Film Detayı"
+            aria-hidden="true"
+        >
+            <div id="modal-content" class="modal-content" tabindex="-1"></div>
+        </div>
+
+        <!-- ===== FAVORİLER YAN PANELİ ===== -->
+        <div
+            id="favorites-backdrop"
+            class="favorites-backdrop"
+            aria-hidden="true"
+        ></div>
+
+        <aside
+            id="favorites-panel"
+            class="favorites-panel"
+            aria-label="Favorilerim"
+            aria-hidden="true"
+        >
+            <div class="favorites-panel__header">
+                <h2 class="favorites-panel__title">❤️ Favorilerim</h2>
+                <button
+                    id="close-favorites-btn"
+                    class="favorites-panel__close-btn"
+                    type="button"
+                    aria-label="Favoriler panelini kapat"
+                >
+                    ✕
+                </button>
+            </div>
+
+            <div
+                id="favorites-list"
+                class="favorites-panel__list"
+                role="list"
+            ></div>
+        </aside>
+
+        <!-- ===== TOAST BİLDİRİM CONTAINER ===== -->
+        <div
+            id="toast-container"
+            class="toast-container"
+            aria-live="polite"
+            aria-atomic="false"
+        ></div>
+
+        <!-- ===== SCRIPTS ===== -->
+        <!--
+      Yükleme sırası önemli:
+        1. config.js   — CONFIG nesnesi (API key)
+        2. storage.js  — LocalStorage yardımcıları
+        3. api.js      — OMDB API çağrıları
+        4. ui.js       — DOM render fonksiyonları
+        5. app.js      — Ana uygulama mantığı (son yüklenmeli)
+    -->
+        <script src="config.js"></script>
+        <script src="js/storage.js"></script>
+        <script src="js/api.js"></script>
+        <script src="js/ui.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>
